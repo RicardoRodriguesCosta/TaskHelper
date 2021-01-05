@@ -157,4 +157,5 @@ t = "Tente mais uma vez\n\n"
 i = "int"
 s = "str"
 h = "Input:     "
-menu_fun()
+if __name__ == '__main__':
+    menu_fun()
