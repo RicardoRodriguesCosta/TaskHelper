@@ -1,5 +1,5 @@
 import subprocess
-from terminaltables import AsciiTable #depende de terminal tables
+from terminaltables import AsciiTable #dependence
 def get_projects():
     b = ["task",'projects']
     output = subprocess.run(b,stdout=subprocess.PIPE).stdout.decode('utf-8')
@@ -14,9 +14,9 @@ def get_projects():
             listado.append(y)
 
 
-    del listado[0:3] #limpando cabeçalho
-    del listado [-2:] #limpando rodape
-    #loop para deletar o numero de tasks em um projeto.
+    del listado[0:3] #cleaning headers
+    del listado [-2:] #cleaning end of the list
+    #loop to delete the number of tasks from a project.
     a = 0
     for i in listado:
         del i[-1]
@@ -27,10 +27,9 @@ def get_projects():
         i[0] = i[0].rstrip()
         a += 1
         i.append(a)
-        #possivelmente tenho que alterar isso depois usar PATH de alguma forma.
-    listado.append(["Adicionar Novo Projeto", a+1 ])
-    listado.insert(0,["Projeto","#"])
-    listado.append(["Sair",0])
+    listado.append(["Add New Project", a+1 ])
+    listado.insert(0,["Project","#"])
+    listado.append(["Back",0])
     return listado
     
 def loop_simples_de_coleta(argumento,errormsg,classe):
@@ -71,24 +70,24 @@ def receive_input(lista=list,valor=int):
             continue
 
 def tratar_input(projeto=str):
-    if projeto == "Adicionar Novo Projeto":
+    if projeto == "Add New Project":
         return "add"
     else:
         return projeto
 
 def entrar_input(valor=str):
     if valor == "add":
-        nome = input("Nome do Projeto:\n""    ")
+        nome = input("Project Name:\n""    ")
         c = "project:" + "'" + nome + "'"
-        task = input("Nome da Entrada:\n""    ")
+        task = input("New Task Name:\n""    ")
         d = "'" + task + "'"
         b = ["task",'project:',c,d, valor]
         subprocess.run("clear")
         subprocess.run(b,stdout=subprocess.PIPE).stdout.decode('utf-8')
-    elif valor == "Sair":
+    elif valor == "Back":
         menu_fun()
     else:
-        nome = input("Nome da Entrada:\n""    ")
+        nome = input("New Task Name:\n""    ")
         c = "'" + nome + "'"
         d = "project:" + "'" + valor + "'" 
         b = ["task",d,c,'add']
@@ -97,8 +96,8 @@ def entrar_input(valor=str):
 
 def lista_projetos():
     listado = get_projects()
-    del listado[-2:]
-    listado.append(["Voltar",0])
+    del listado[-2]
+    #listado.append(["Back",0])
     listado.insert(1,["All",1000])
     table_listado = AsciiTable(listado)
     print(table_listado.table)
@@ -117,8 +116,8 @@ def lista_projetos():
 
 def burnout():
     listado = get_projects()
-    del listado[-2:]
-    listado.append(["Voltar",0])
+    del listado[-2]
+    #listado.append(["Back",0])
     print(AsciiTable(listado).table)
     r = loop_simples_de_coleta(h,t,i)
     if r == 0:
@@ -137,10 +136,40 @@ def adicionar():
     projeto = receive_input(listado,r)
     entrar_input(tratar_input(projeto))
 
+def remove():
+    lista_projetos()
+    menu = AsciiTable([["Option","#"],["Task Done",1],["Task Start",2],["Task Stop",3],["Task Remove",4],["Exit",0]])
+    print(menu.table)
+    p = "Task Number ID\nConfirm with yes/no:     "
+    menu_response = loop_simples_de_coleta(h,t,i)
+    if menu_response == 0:
+        menu_fun()
+    elif menu_response == 1:
+        nt = loop_simples_de_coleta(p,t,i)
+        c = str(nt)
+        b = ["task",c,"done"]
+        print(subprocess.run(b,stdout=subprocess.PIPE).stdout.decode('utf-8'))
+    elif menu_response == 2:
+        nt = loop_simples_de_coleta(p,t,i)
+        c = str(nt)
+        b = ["task",c,"start"]
+        print(subprocess.run(b,stdout=subprocess.PIPE).stdout.decode('utf-8'))
+    elif menu_response == 3:
+        nt = loop_simples_de_coleta(p,t,i)
+        c = str(nt)
+        b = ["task",c,"stop"]
+        print(subprocess.run(b,stdout=subprocess.PIPE).stdout.decode('utf-8'))
+    elif menu_response == 4:
+        nt = loop_simples_de_coleta(p,t,i)
+        c = str(nt)
+        b = ["task",c,"delete"]
+        print(subprocess.run(b,stdout=subprocess.PIPE).stdout.decode('utf-8'))
+    else:
+        menu_fun()
 def menu_fun():
     subprocess.run("clear")
     while True:
-        menu = AsciiTable([["Opção","#"],["Entrada de Tarefas",1],["Lista de Tarefas",2],["Burnout Chart",3],["Sair",0]])
+        menu = AsciiTable([["Option","#"],["Task Entry",1],["Task List",2],["Burnout Chart",3],["Manipulate Task",4],["Exit",0]])
         print(menu.table)
         menu_response = loop_simples_de_coleta(h,t,i)
         if menu_response == 1:
@@ -151,11 +180,13 @@ def menu_fun():
             burnout()
         elif menu_response == 0:
             exit()
+        elif menu_response == 4:
+            remove()
         else:
             continue
-t = "Tente mais uma vez\n\n"
+t = "Try once again\n"
 i = "int"
 s = "str"
 h = "Input:     "
-if __name__ == '__main__':
+if __name__ == "__main__":
     menu_fun()
