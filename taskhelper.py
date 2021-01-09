@@ -179,14 +179,17 @@ def menu_fun():
         elif menu_response ==3:
             burnout()
         elif menu_response == 0:
-            exit()
+            break
         elif menu_response == 4:
             remove()
         else:
             continue
+def clean():
+    subprocess.run(["rm","temp.txt"],stdout=subprocess.PIPE).stdout.decode('utf-8')
 t = "Try once again\n"
 i = "int"
 s = "str"
 h = "Input:     "
 if __name__ == "__main__":
     menu_fun()
+    clean()
